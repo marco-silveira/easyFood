@@ -1,11 +1,18 @@
 package graphql
 
-import "easyfood/pkg/graphql/gqlgen"
+import (
+	"github.com/jmoiron/sqlx"
 
-type app struct{}
+	"easyfood/pkg/graphql/gqlgen"
+	"easyfood/services"
+)
 
-func NewResolverRoot() gqlgen.ResolverRoot {
-	return new(app)
+type app struct {
+	services services.All
+}
+
+func NewResolverRoot(db *sqlx.DB) gqlgen.ResolverRoot {
+	return app{services: services.NewServices(db)}
 }
 
 func (a app) Mutation() gqlgen.MutationResolver {
@@ -13,5 +20,5 @@ func (a app) Mutation() gqlgen.MutationResolver {
 }
 
 func (a app) Query() gqlgen.QueryResolver {
-	return NewQueryResolver()
+	return NewQueryResolver(a.services)
 }

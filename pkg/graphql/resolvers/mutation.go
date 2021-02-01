@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"easyfood/pkg/entity"
 	"easyfood/pkg/graphql/gqlgen"
 	"easyfood/pkg/graphql/models"
 )
@@ -13,5 +14,5 @@ func NewMutationResolver() gqlgen.MutationResolver {
 }
 
 func (m mutationResolver) CreateUser(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
-	return models.NewUser(0), nil
+	return models.NewUser(entity.User{}), nil
 }

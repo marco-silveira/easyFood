@@ -1,12 +1,14 @@
 package models
 
-func NewUser(id int) *User {
+import "easyfood/pkg/entity"
+
+func NewUser(u entity.User) *User {
 	result := &User{
-		ID:          id,
-		FirstName:   "Rafael",
-		LastName:    "Barbosa",
-		PhoneNumber: "3199827382",
-		Email:       "massoni@gmail.com",
+		ID:          u.Id,
+		FirstName:   u.FirstName,
+		LastName:    u.LastName,
+		PhoneNumber: u.PhoneNumber,
+		Email:       u.Email,
 	}
 
 	return result
