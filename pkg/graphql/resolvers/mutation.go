@@ -23,7 +23,27 @@ func (m mutationResolver) CreateDish(ctx context.Context, input models.CreateDis
 }
 
 func (m mutationResolver) CreateUser(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
-	return models.NewUser(entity.User{}), nil
+	if input.Email == "" {
+		return nil, errors.New("invalid email")
+	}
+
+	if input.Senha == "" {
+		return nil, errors.New("invalid password")
+	}
+
+	user := entity.User{
+		FirstName:   input.FirstName,
+		LastName:    input.LastName,
+		Email:       input.Email,
+		PhoneNumber: input.PhoneNumber,
+		Password:    input.Senha,
+	}
+
+	err := m.services.User.Create(ctx, &user)
+	if err != nil {
+		return nil, err
+	}
+	return models.NewUser(user), nil
 }
 
 func (m mutationResolver) CreateCategory(ctx context.Context, name string) (bool, error) {

@@ -10,6 +10,7 @@ import (
 
 type UserService interface {
 	Get(ctx context.Context, id int) (*entity.User, error)
+	Create(ctx context.Context, user *entity.User) error
 }
 
 type userService struct {
@@ -24,9 +25,25 @@ func (u userService) Get(ctx context.Context, id int) (*entity.User, error) {
 	result := new(entity.User)
 	query := "SELECT * FROM usuarios WHERE id = ?"
 
-	if err := u.db.Get(&result, query, id); err != nil {
+	if err := u.db.GetContext(ctx, &result, query, id); err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
+
+func (u userService) Create(ctx context.Context, user *entity.User) error {
+	query := `
+	INSERT INTO usuarios (primeiro_nome, ultimo_nome, email, telefone, senha_hash)
+	VALUES (:primeiro_nome, :ultimo_nome, :email, :telefone, SHA1(:senha_hash))`
+
+	result, err := u.db.NamedExecContext(ctx, query, user)
+	if err != nil {
+		return err
+	}
+
+	id, _ := result.LastInsertId()
+	user.Id = int(id)
+	return nil
+}
+
