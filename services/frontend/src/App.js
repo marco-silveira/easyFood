@@ -3,9 +3,33 @@ import "./App.css";
 import { ApolloProvider, useMutation } from "@apollo/react-hooks";
 import { client } from "./apollo-client";
 import { Route } from "react-router";
-import { GetAllRestaurants, GetRestaurantsByCategory } from "./gqlComponents/restaurant/RestaurantContainer";
+import {
+    GetAllRestaurants,
+    GetRestaurantsByID
+} from "./gqlComponents/restaurant/RestaurantContainer";
+import {
+    GetAllCategories,
+    GetCategoryByID
+} from "./gqlComponents/category/CategoryContainer";
 import { useState, useEffect } from "react";
 
+const CategoryPage = ({match}) => {
+    const {
+        params: { categoryId },
+    } = match;
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState();
+
+    useEffect(() => {
+    },[categoryId]);
+    return (
+        <div>
+            <ApolloProvider client={client}>
+                <GetCategoryByID filter={categoryId} />
+            </ApolloProvider>
+        </div>
+    )
+}
 
 const RestaurantPage = ({match}) => {
   const {
@@ -19,13 +43,21 @@ const RestaurantPage = ({match}) => {
   return (
     <div>
       <ApolloProvider client={client}>
-        <GetRestaurantsByCategory filter={restaurantId} />
+        <GetRestaurantsByID filter={restaurantId} />
       </ApolloProvider>
     </div>
   )
 }
 
-
+function Categories() {
+    return (
+        <div>
+            <ApolloProvider client={client}>
+                <GetAllCategories />
+            </ApolloProvider>
+        </div>
+    );
+}
 
 function Restaurants() {
   return (
@@ -51,6 +83,11 @@ class App extends React.Component {
           <Restaurants />
         </Route>
         <Route path="/restaurant/:restaurantId" component={RestaurantPage} />
+
+        <Route exact path="/category" component={Categories}>
+          <Categories />
+        </Route>
+        <Route path="/category/:categoryId" component={CategoryPage} />
       </div>
     );
 

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { 
   GET_RESTAURANTES, 
-  GET_RESTAURANTES_BY_CATEGORY 
+  GET_RESTAURANTES_BY_ID
 } from "./Query";
 
 const GetAllRestaurants = () => {
@@ -22,8 +22,8 @@ const GetAllRestaurants = () => {
   );
 };
 
-const GetRestaurantsByCategory = ({filter}) => {
-  const { loading, error, data, refetch } = useQuery(GET_RESTAURANTES_BY_CATEGORY, {
+const GetRestaurantsByID = ({filter}) => {
+  const { loading, error, data, refetch } = useQuery(GET_RESTAURANTES_BY_ID, {
     fetchPolicy: "cache-and-network",
     variables: { input: filter },
   });
@@ -36,4 +36,4 @@ const GetRestaurantsByCategory = ({filter}) => {
   );
 };
 
-export { GetAllRestaurants, GetRestaurantsByCategory };
+export { GetAllRestaurants, GetRestaurantsByID };
