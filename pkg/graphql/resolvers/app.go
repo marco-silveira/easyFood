@@ -22,3 +22,7 @@ func (a app) Mutation() gqlgen.MutationResolver {
 func (a app) Query() gqlgen.QueryResolver {
 	return NewQueryResolver(a.services)
 }
+
+func (a app) Restaurant() gqlgen.RestaurantResolver {
+	return NewRestaurantResolver(a.services)
+}

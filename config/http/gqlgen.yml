@@ -5,3 +5,9 @@ exec:
 
 model:
   filename: ./../../pkg/graphql/models/generated.go
+
+models:
+  Restaurant:
+    fields:
+      dishes:
+        resolver: true

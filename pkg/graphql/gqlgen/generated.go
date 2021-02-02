@@ -38,6 +38,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Restaurant() RestaurantResolver
 }
 
 type DirectiveRoot struct {
@@ -110,6 +111,9 @@ type QueryResolver interface {
 	Restaurant(ctx context.Context, id *int) ([]*models.Restaurant, error)
 	Dish(ctx context.Context, id *int) ([]*models.Dish, error)
 	Category(ctx context.Context, id *int) ([]*models.Category, error)
+}
+type RestaurantResolver interface {
+	Dishes(ctx context.Context, obj *models.Restaurant) ([]*models.Dish, error)
 }
 
 type executableSchema struct {
@@ -1527,14 +1531,14 @@ func (ec *executionContext) _Restaurant_dishes(ctx context.Context, field graphq
 		Object:     "Restaurant",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Dishes, nil
+		return ec.resolvers.Restaurant().Dishes(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3528,51 +3532,60 @@ func (ec *executionContext) _Restaurant(ctx context.Context, sel ast.SelectionSe
 		case "id":
 			out.Values[i] = ec._Restaurant_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "category":
 			out.Values[i] = ec._Restaurant_category(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "dishes":
-			out.Values[i] = ec._Restaurant_dishes(ctx, field, obj)
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Restaurant_dishes(ctx, field, obj)
+				return res
+			})
 		case "openHour":
 			out.Values[i] = ec._Restaurant_openHour(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "closeHour":
 			out.Values[i] = ec._Restaurant_closeHour(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "openDays":
 			out.Values[i] = ec._Restaurant_openDays(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "city":
 			out.Values[i] = ec._Restaurant_city(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Restaurant_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
 			out.Values[i] = ec._Restaurant_description(ctx, field, obj)
 		case "phoneNumber":
 			out.Values[i] = ec._Restaurant_phoneNumber(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "address":
 			out.Values[i] = ec._Restaurant_address(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
