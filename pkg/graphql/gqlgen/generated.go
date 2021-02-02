@@ -106,7 +106,7 @@ type DishResolver interface {
 }
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input models.CreateUserInput) (*models.User, error)
-	CreateDish(ctx context.Context, input models.CreateDishInput) (bool, error)
+	CreateDish(ctx context.Context, input models.CreateDishInput) (*models.Dish, error)
 	CreateCategory(ctx context.Context, name string) (bool, error)
 	CreateRestaurant(ctx context.Context, input models.CreateRestaurantInput) (*models.Restaurant, error)
 }
@@ -550,7 +550,7 @@ type Query {
 
 type Mutation {
 	createUser(input: createUserInput!): User!
-	createDish(input: createDishInput!): Boolean!
+	createDish(input: createDishInput!): Dish!
 	createCategory(name: String!): Boolean!
 	createRestaurant(input: createRestaurantInput!): Restaurant!
 }
@@ -1136,9 +1136,9 @@ func (ec *executionContext) _Mutation_createDish(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*models.Dish)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNDish2ᚖeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐDish(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3949,6 +3949,10 @@ func (ec *executionContext) marshalNCity2ᚖeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐ
 		return graphql.Null
 	}
 	return ec._City(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDish2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐDish(ctx context.Context, sel ast.SelectionSet, v models.Dish) graphql.Marshaler {
+	return ec._Dish(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNDish2ᚖeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐDish(ctx context.Context, sel ast.SelectionSet, v *models.Dish) graphql.Marshaler {

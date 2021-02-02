@@ -77,7 +77,7 @@ type Query {
 
 type Mutation {
 	createUser(input: createUserInput!): User!
-	createDish(input: createDishInput!): Boolean!
+	createDish(input: createDishInput!): Dish!
 	createCategory(name: String!): Boolean!
 	createRestaurant(input: createRestaurantInput!): Restaurant!
 }
