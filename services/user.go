@@ -35,7 +35,7 @@ func (u userService) Get(ctx context.Context, id int) (*entity.User, error) {
 func (u userService) Create(ctx context.Context, user *entity.User) error {
 	query := `
 	INSERT INTO usuarios (primeiro_nome, ultimo_nome, email, telefone, senha_hash)
-	VALUES (:primeiro_nome, :ultimo_nome, :email, :telefone, SHA1(:senha_hash))`
+	VALUES (:primeiro_nome, :ultimo_nome, :email, :telefone, SHA2(:senha_hash, 256))`
 
 	result, err := u.db.NamedExecContext(ctx, query, user)
 	if err != nil {
@@ -46,4 +46,3 @@ func (u userService) Create(ctx context.Context, user *entity.User) error {
 	user.Id = int(id)
 	return nil
 }
-
