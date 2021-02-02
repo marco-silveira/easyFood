@@ -11,6 +11,7 @@ type User {
 type Restaurant {
 	id: Int!
 	category: Category!
+	dishes: [Dish!]
 	openHour: Time!
 	closeHour: Time!
 	openDays: [Weekdays!]!
@@ -69,8 +70,8 @@ input createRestaurantInput {
 
 type Query {
 	user(id: Int!): User!
-	restaurant(category: [String!]!): [Restaurant!]
-	dish(name: String!, category: [String!]): [Dish!]
+	restaurant(id: Int!): Restaurant!
+	dish(id: Int): [Dish!]
 	category(id: Int!): Category!
 }
 

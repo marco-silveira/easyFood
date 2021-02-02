@@ -21,10 +21,12 @@ func NewUserService(db *sqlx.DB) UserService {
 }
 
 func (u userService) Get(ctx context.Context, id int) (*entity.User, error) {
-	result := entity.User{}
-	if err := u.db.Get(&result, "SELECT * FROM usuarios WHERE id = ?", id); err != nil {
+	result := new(entity.User)
+	query := "SELECT * FROM usuarios WHERE id = ?"
+
+	if err := u.db.Get(&result, query, id); err != nil {
 		return nil, err
 	}
 
-	return &result, nil
+	return result, nil
 }

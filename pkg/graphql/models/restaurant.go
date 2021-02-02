@@ -5,8 +5,17 @@ import "time"
 func NewRestaurant() []*Restaurant {
 	result := make([]*Restaurant, 0)
 	result = append(result, &Restaurant{
-		ID:          0,
-		Category:    &Category{},
+		ID: 2,
+		Category: &Category{
+			ID:   999,
+			Name: "bla",
+		},
+		Dishes: []*Dish{
+			{
+				ID:   1,
+				Name: "prato",
+			},
+		},
 		OpenHour:    time.Now(),
 		CloseHour:   time.Now(),
 		OpenDays:    AllWeekdays,
