@@ -610,7 +610,7 @@ input createDishInput {
 input updateDishInput {
 	id: Int!
 	name: String!
-	category: Int
+	categoryId: Int
 	price: Float!
 	cookTime: Int!
 }
@@ -629,15 +629,13 @@ input createRestaurantInput {
 
 input updateRestaurantInput {
 	id: Int!
-	categoryId: Int!
-	openHour: Hour!
-	closeHour: Hour!
-	openDays: [Weekdays!]!
-	cityId: Int!
-	name: String!
+	openHour: Hour
+	closeHour: Hour
+	openDays: [Weekdays!]
+	name: String
 	description: String
-	phoneNumber: String!
-	address: String!
+	phoneNumber: String
+	address: String
 }
 
 input updateCategoryInput {
@@ -3721,11 +3719,11 @@ func (ec *executionContext) unmarshalInputupdateDishInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "category":
+		case "categoryId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			it.Category, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+			it.CategoryID, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3765,19 +3763,11 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "categoryId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
-			it.CategoryID, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "openHour":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("openHour"))
-			it.OpenHour, err = ec.unmarshalNHour2string(ctx, v)
+			it.OpenHour, err = ec.unmarshalOHour2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3785,7 +3775,7 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("closeHour"))
-			it.CloseHour, err = ec.unmarshalNHour2string(ctx, v)
+			it.CloseHour, err = ec.unmarshalOHour2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3793,15 +3783,7 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("openDays"))
-			it.OpenDays, err = ec.unmarshalNWeekdays2ᚕeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdaysᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "cityId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cityId"))
-			it.CityID, err = ec.unmarshalNInt2int(ctx, v)
+			it.OpenDays, err = ec.unmarshalOWeekdays2ᚕeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdaysᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3809,7 +3791,7 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3825,7 +3807,7 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
-			it.PhoneNumber, err = ec.unmarshalNString2string(ctx, v)
+			it.PhoneNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3833,7 +3815,7 @@ func (ec *executionContext) unmarshalInputupdateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
-			it.Address, err = ec.unmarshalNString2string(ctx, v)
+			it.Address, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5095,6 +5077,21 @@ func (ec *executionContext) marshalODish2ᚕᚖeasyfoodᚋpkgᚋgraphqlᚋmodels
 	return ret
 }
 
+func (ec *executionContext) unmarshalOHour2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOHour2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
+}
+
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
@@ -5172,6 +5169,70 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) unmarshalOWeekdays2ᚕeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdaysᚄ(ctx context.Context, v interface{}) ([]models.Weekdays, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]models.Weekdays, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNWeekdays2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdays(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOWeekdays2ᚕeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdaysᚄ(ctx context.Context, sel ast.SelectionSet, v []models.Weekdays) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNWeekdays2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐWeekdays(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

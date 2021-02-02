@@ -14,6 +14,63 @@ type mutationResolver struct {
 	services services.All
 }
 
+func (m mutationResolver) UpdateRestaurant(ctx context.Context, input models.UpdateRestaurantInput) (*models.Restaurant, error) {
+	restaurant, err := m.services.Restaurant.Get(ctx, &input.ID)
+	if err != nil {
+		return nil, err
+	}
+	r := restaurant[0]
+
+	changes := false
+	if input.Name != nil {
+		if *input.Name != r.Name {
+			r.Name = *input.Name
+			changes = true
+		}
+	}
+	if input.PhoneNumber != nil {
+		if *input.PhoneNumber != r.PhoneNumber {
+			r.PhoneNumber = *input.PhoneNumber
+			changes = true
+		}
+	}
+	if input.Address != nil {
+		if *input.Address != r.Address {
+			r.Address = *input.Address
+			changes = true
+		}
+	}
+	if input.OpenHour != nil {
+		if *input.OpenHour != r.OpenHour {
+			r.OpenHour = *input.OpenHour
+			changes = true
+		}
+	}
+	if input.CloseHour != nil {
+		if *input.CloseHour != r.CloseHour {
+			r.CloseHour = *input.CloseHour
+			changes = true
+		}
+	}
+	if len(input.OpenDays) > 0 {
+		r.OpenDays = models.GetEntityWeekdays(input.OpenDays)
+		changes = true
+	}
+	if input.Description != r.Description {
+		r.Description = input.Description
+		changes = true
+	}
+
+	if changes {
+		if err := m.services.Restaurant.Update(ctx, r); err != nil {
+			return nil, errors.New("failed to update")
+		}
+	}
+
+	result := models.NewRestaurant(r)[0]
+	return result, nil
+}
+
 func NewMutationResolver(s services.All) gqlgen.MutationResolver {
 	return mutationResolver{services: s}
 }
@@ -23,13 +80,13 @@ func (m mutationResolver) CreateDish(ctx context.Context, input models.CreateDis
 		return nil, errors.New("invalid dish name")
 	}
 
-	if input.Restaurant == 0 {
+	if input.RestaurantID == 0 {
 		return nil, errors.New("must be associated to a restaurant")
 	}
 
 	dish := entity.Dish{
-		RestaurantID: input.Restaurant,
-		CategoryID:   input.Category,
+		RestaurantID: input.RestaurantID,
+		CategoryID:   input.CategoryID,
 		Name:         input.Name,
 		Price:        input.Price,
 		CookTime:     input.CookTime,
@@ -137,7 +194,7 @@ func (m mutationResolver) UpdateDish(ctx context.Context, input models.UpdateDis
 
 	dish := entity.Dish{
 		Id:         input.ID,
-		CategoryID: input.Category,
+		CategoryID: input.CategoryID,
 		Name:       input.Name,
 		Price:      input.Price,
 		CookTime:   input.CookTime,

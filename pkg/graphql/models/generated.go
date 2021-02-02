@@ -87,24 +87,22 @@ type UpdateCategoryInput struct {
 }
 
 type UpdateDishInput struct {
-	ID       int     `json:"id"`
-	Name     string  `json:"name"`
-	Category *int    `json:"category"`
-	Price    float64 `json:"price"`
-	CookTime int     `json:"cookTime"`
+	ID         int     `json:"id"`
+	Name       string  `json:"name"`
+	CategoryID *int    `json:"categoryId"`
+	Price      float64 `json:"price"`
+	CookTime   int     `json:"cookTime"`
 }
 
 type UpdateRestaurantInput struct {
 	ID          int        `json:"id"`
-	CategoryID  int        `json:"categoryId"`
-	OpenHour    string     `json:"openHour"`
-	CloseHour   string     `json:"closeHour"`
+	OpenHour    *string    `json:"openHour"`
+	CloseHour   *string    `json:"closeHour"`
 	OpenDays    []Weekdays `json:"openDays"`
-	CityID      int        `json:"cityId"`
-	Name        string     `json:"name"`
+	Name        *string    `json:"name"`
 	Description *string    `json:"description"`
-	PhoneNumber string     `json:"phoneNumber"`
-	Address     string     `json:"address"`
+	PhoneNumber *string    `json:"phoneNumber"`
+	Address     *string    `json:"address"`
 }
 
 type Weekdays string

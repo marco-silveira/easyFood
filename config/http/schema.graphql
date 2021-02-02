@@ -64,7 +64,7 @@ input createDishInput {
 input updateDishInput {
 	id: Int!
 	name: String!
-	category: Int
+	categoryId: Int
 	price: Float!
 	cookTime: Int!
 }
@@ -83,15 +83,13 @@ input createRestaurantInput {
 
 input updateRestaurantInput {
 	id: Int!
-	categoryId: Int!
-	openHour: Hour!
-	closeHour: Hour!
-	openDays: [Weekdays!]!
-	cityId: Int!
-	name: String!
+	openHour: Hour
+	closeHour: Hour
+	openDays: [Weekdays!]
+	name: String
 	description: String
-	phoneNumber: String!
-	address: String!
+	phoneNumber: String
+	address: String
 }
 
 input updateCategoryInput {
