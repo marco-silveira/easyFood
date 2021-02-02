@@ -26,7 +26,10 @@ const Restaurant = ({ loading, error, data }) => {
       <h3>Endereço: {data.restaurant[0].address}</h3>
       <ul>
       {data.restaurant[0].dishes && data.restaurant[0].dishes.map(dish => (
-        <a onClick={ () => {window.location = dish.id}}>{dish.name} - ${dish.price}</a>
+        <a onClick={() => {
+            window.location.pathname = "dish/"+dish.id
+        }
+        }>{dish.name} - ${dish.price}</a>
       ))}
     </ul>
     </>

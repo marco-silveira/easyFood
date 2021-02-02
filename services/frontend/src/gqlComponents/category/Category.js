@@ -21,7 +21,9 @@ const Category = ({ loading, error, data }) => {
             <h1>{data.category[0].name}</h1>
             <h2>
                 {data.category[0].restaurants && data.category[0].restaurants.map(restaurant => (
-                    <a onClick={ () => {window.location = restaurant.id}}>{restaurant.name} - {restaurant.description}</a>
+                    <a onClick={() => {
+                        window.location.pathname = "restaurant/"+restaurant.id}
+                    }>{restaurant.name} - {restaurant.description}</a>
                 ))}
             </h2>
         </>

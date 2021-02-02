@@ -22,7 +22,7 @@ const GetAllRestaurants = () => {
   );
 };
 
-const GetRestaurantsByID = ({filter}) => {
+const GetRestaurantsById = ({filter}) => {
   const { loading, error, data, refetch } = useQuery(GET_RESTAURANTES_BY_ID, {
     fetchPolicy: "cache-and-network",
     variables: { input: filter },
@@ -36,4 +36,4 @@ const GetRestaurantsByID = ({filter}) => {
   );
 };
 
-export { GetAllRestaurants, GetRestaurantsByID };
+export { GetAllRestaurants, GetRestaurantsById };

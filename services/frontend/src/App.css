@@ -4,10 +4,10 @@ ul {
   left: -2%;
 }
 
-a { 
+a {
     text-decoration: none;
     text-align: center;
-    color:rgb(147, 217, 229); 
+    color:rgb(147, 217, 229);
     display: block;
     text-size-adjust: 150%;
   }
@@ -112,6 +112,18 @@ label {
       border: none;
   }
 
+}
+
+/*
+* -- DESKTOP (AND UP) MEDIA QUERIES --
+* On desktops and other large devices, we want to over-ride some
+* of the mobile and tablet styles.
+*/
+@media (min-width: 78em) {
+  /* We increase the header font size even more */
+  .splash-head {
+      font-size: 300%;
+  }
 }
 
 /*

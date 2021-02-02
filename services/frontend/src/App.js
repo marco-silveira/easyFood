@@ -6,8 +6,14 @@ import { Route } from "react-router";
 import { Link } from "react-router-dom";
 import {
     GetAllRestaurants,
-    GetRestaurantsByID
-} from "./gqlComponents/restaurant/RestaurantContainer";
+    GetRestaurantsById
+}
+from "./gqlComponents/restaurant/RestaurantContainer";
+import {
+    GetAllDishes,
+    GetDishById
+}
+from "./gqlComponents/dish/DishContainer";
 import {
     GetAllCategories,
     GetCategoryByID
@@ -56,7 +62,7 @@ const RestaurantPage = ({match}) => {
               <div class="splash">
                   <p class="splash-in">
                     <b>
-                      <GetRestaurantsByID filter={restaurantId} />
+                      <GetRestaurantsById filter={restaurantId} />
                    </b>
                 </p>
             </div>
@@ -125,6 +131,51 @@ function HomePage() {
   );
 }
 
+const DishPage = ({match}) => {
+    const {
+        params: { dishId },
+    } = match;
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState();
+
+    useEffect(() => {
+    },[dishId]);
+    return (
+        <div>
+            <ApolloProvider client={client}>
+                <div className="splash-container">
+                    <div className="splash">
+                        <p className="splash-in">
+                            <b>
+                                <GetDishById filter={dishId}/>
+                            </b>
+                        </p>
+                    </div>
+                </div>
+            </ApolloProvider>
+        </div>
+    )
+}
+
+function Dishes() {
+    return (
+        <div>
+            <ApolloProvider client={client}>
+                <div class="splash-container">
+                    <div class="splash">
+                        <h1 class="splash-head">PRATOS</h1>
+                        <p class="splash-subhead">
+                            <b>
+                                <GetAllDishes />
+                            </b>
+                        </p>
+                    </div>
+                </div>
+            </ApolloProvider>
+        </div>
+    );
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -144,10 +195,14 @@ class App extends React.Component {
         </Route>
         <Route path="/category/:categoryId" component={CategoryPage} />
 
+        <Route exact path="/dish" component={Dishes}>
+          <Dishes />
+        </Route>
+        <Route path="/dish/:dishId" component={DishPage} />
+
         <Route exact path="/" component={HomePage}>
           <HomePage />
         </Route>
-
       </div>
     );
 
