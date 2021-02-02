@@ -10,14 +10,6 @@ SET foreign_key_checks = 1;
 CREATE DATABASE IF NOT EXISTS `easyfood` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `easyfood`;
 
-CREATE Table `dim_horas` (
-  `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
-  `hora` TIME NOT NULL ,
-  PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=UTF8
-    SELECT date_format(date('2010/01/01') + interval (seq * 1) Minute, '%H:%i') as hora
-    FROM seq_0_to_1439;
-
 -- Dumping structure for table easyfood.categorias
 CREATE TABLE IF NOT EXISTS `categorias` (
   `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -30,27 +22,39 @@ INSERT INTO `categorias` (`id`, `nome`) VALUES
   (2, "Massas"),
   (3, "Japonesa");
 
+CREATE TABLE IF NOT EXISTS `dim_cidade` (
+    `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+    `codigo` INT(7) unsigned NOT NULL DEFAULT 0,
+    `nome` CHAR(255) NOT NULL DEFAULT '0',
+    `uf` CHAR(2) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+LOAD DATA INFILE 'easyfood/cidades/cidades.csv'
+    INTO TABLE `dim_cidade`
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
 -- Dumping structure for table easyfood.restaurantes
 CREATE TABLE IF NOT EXISTS `restaurantes` (
   `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
-  `id_horario_abertura` INT(11) unsigned,
-  `id_horario_fechamento` INT(11) unsigned,
-  `id_cidade` INT(11) NOT NULL,
+  `horario_abertura` TIME,
+  `horario_fechamento` TIME,
+  `id_cidade` INT(11) unsigned,
   `dias_funcionamento` TINYINT(3) unsigned NOT NULL COMMENT "Representacao binaria : 1 = segunda , 2 = terca, 4 = quarta etc",
   `nome` varchar(32) NOT NULL,
   `descricao` TEXT,
   `telefone` varchar(11) NOT NULL,
   `endereco` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_horario_abertura` (`id_horario_abertura`),
-  KEY `id_horario_fechamento` (`id_horario_fechamento`),
-  CONSTRAINT `restaurante_horario_abertura_fk` FOREIGN KEY (`id_horario_abertura`) REFERENCES `dim_horas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `restaurante_horario_fechamento_fk` FOREIGN KEY (`id_horario_fechamento`) REFERENCES `dim_horas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  KEY `id_cidade` (`id_cidade`),
+  CONSTRAINT `restaurante_cidade_fk` FOREIGN KEY (`id_cidade`) REFERENCES `dim_cidade` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-INSERT INTO `restaurantes` (`id_horario_abertura` ,`id_horario_fechamento` ,`dias_funcionamento` ,`id_cidade` ,`nome` ,`descricao` ,`telefone` ,`endereco`) VALUES
-	(5, 1200, 3, 2, "Restaurante do zé", "Melhor comida feita pelo zé", "31985467513", "Rua das flores, numero 12, bairro Sagrada Familia"),
-	(700, 1200, 9, 3, "Maria das Massas", "Massas artesanais", "33985467513", "Rua das flores, numero 12, bairro Sagrada Familia");
+INSERT INTO `restaurantes` (`horario_abertura` ,`horario_fechamento` ,`dias_funcionamento` ,`id_cidade` ,`nome` ,`descricao` ,`telefone` ,`endereco`) VALUES
+	("15:00:00", "21:30:00", 3, 2, "Restaurante do zé", "Melhor comida feita pelo zé", "31985467513", "Rua das flores, numero 12, bairro Sagrada Familia"),
+	("10:45:00", "16:00:00", 9, 3, "Maria das Massas", "Massas artesanais", "33985467513", "Rua das flores, numero 12, bairro Sagrada Familia");
 
 -- Dumping data for table easyfood.categorias: ~0 rows (approximately)
 /*!40000 ALTER TABLE `categorias` DISABLE KEYS */;

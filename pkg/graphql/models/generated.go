@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"time"
 )
 
 type Category struct {
@@ -31,8 +30,8 @@ type Restaurant struct {
 	ID          int         `json:"id"`
 	Category    []*Category `json:"category"`
 	Dishes      []*Dish     `json:"dishes"`
-	OpenHour    time.Time   `json:"openHour"`
-	CloseHour   time.Time   `json:"closeHour"`
+	OpenHour    string      `json:"openHour"`
+	CloseHour   string      `json:"closeHour"`
 	OpenDays    []Weekdays  `json:"openDays"`
 	City        *City       `json:"city"`
 	Name        string      `json:"name"`
@@ -59,13 +58,13 @@ type CreateDishInput struct {
 
 type CreateRestaurantInput struct {
 	Category    int        `json:"category"`
-	OpenHour    time.Time  `json:"openHour"`
-	CloseHour   time.Time  `json:"closeHour"`
+	OpenHour    string     `json:"openHour"`
+	CloseHour   string     `json:"closeHour"`
 	OpenDays    []Weekdays `json:"openDays"`
 	City        int        `json:"city"`
 	Name        string     `json:"name"`
 	Description *string    `json:"description"`
-	PhoneNumber int        `json:"phoneNumber"`
+	PhoneNumber string     `json:"phoneNumber"`
 	Address     string     `json:"address"`
 }
 

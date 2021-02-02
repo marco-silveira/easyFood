@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
-	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -472,7 +471,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphql", Input: `scalar Time
+	{Name: "schema.graphql", Input: `scalar Hour
 
 type User {
 	id: Int!
@@ -486,8 +485,8 @@ type Restaurant {
 	id: Int!
 	category: [Category!]
 	dishes: [Dish!]
-	openHour: Time!
-	closeHour: Time!
+	openHour: Hour!
+	closeHour: Hour!
 	openDays: [Weekdays!]!
 	city: City!
 	name: String!
@@ -532,13 +531,13 @@ input createDishInput {
 
 input createRestaurantInput {
 	category: Int!
-	openHour: Time!
-	closeHour: Time!
+	openHour: Hour!
+	closeHour: Hour!
 	openDays: [Weekdays!]!
 	city: Int!
 	name: String!
 	description: String
-	phoneNumber: Int!
+	phoneNumber: String!
 	address: String!
 }
 
@@ -1585,9 +1584,9 @@ func (ec *executionContext) _Restaurant_openHour(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNHour2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Restaurant_closeHour(ctx context.Context, field graphql.CollectedField, obj *models.Restaurant) (ret graphql.Marshaler) {
@@ -1620,9 +1619,9 @@ func (ec *executionContext) _Restaurant_closeHour(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNHour2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Restaurant_openDays(ctx context.Context, field graphql.CollectedField, obj *models.Restaurant) (ret graphql.Marshaler) {
@@ -3164,7 +3163,7 @@ func (ec *executionContext) unmarshalInputcreateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("openHour"))
-			it.OpenHour, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			it.OpenHour, err = ec.unmarshalNHour2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3172,7 +3171,7 @@ func (ec *executionContext) unmarshalInputcreateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("closeHour"))
-			it.CloseHour, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			it.CloseHour, err = ec.unmarshalNHour2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3212,7 +3211,7 @@ func (ec *executionContext) unmarshalInputcreateRestaurantInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
-			it.PhoneNumber, err = ec.unmarshalNInt2int(ctx, v)
+			it.PhoneNumber, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3977,6 +3976,21 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNHour2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNHour2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4013,21 +4027,6 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
-	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

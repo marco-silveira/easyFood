@@ -2,15 +2,20 @@ package graphql
 
 import (
 	"context"
+	"errors"
+
 	"easyfood/pkg/entity"
 	"easyfood/pkg/graphql/gqlgen"
 	"easyfood/pkg/graphql/models"
+	"easyfood/services"
 )
 
-type mutationResolver struct{}
+type mutationResolver struct{
+	services services.All
+}
 
-func NewMutationResolver() gqlgen.MutationResolver {
-	return new(mutationResolver)
+func NewMutationResolver(s services.All) gqlgen.MutationResolver {
+	return mutationResolver{services: s}
 }
 
 func (m mutationResolver) CreateDish(ctx context.Context, input models.CreateDishInput) (bool, error) {
@@ -26,5 +31,36 @@ func (m mutationResolver) CreateCategory(ctx context.Context, name string) (bool
 }
 
 func (m mutationResolver) CreateRestaurant(ctx context.Context, input models.CreateRestaurantInput) (*models.Restaurant, error) {
-	return models.NewRestaurant()[0], nil
+	if input.Name == "" {
+		return nil, errors.New("invalid name")
+	}
+
+	if input.Address == "" {
+		return nil, errors.New("invalid address")
+	}
+
+	if len(input.OpenDays) == 0 {
+		return nil, errors.New("must specify open days")
+	}
+
+	if input.PhoneNumber == "" {
+		return nil, errors.New("invalid phone number")
+	}
+
+	restaurant := entity.Restaurant{
+		OpenHour:    input.OpenHour,
+		CloseHour:   input.CloseHour,
+		OpenDays:    models.GetEntityWeekdays(input.OpenDays),
+		Name:        input.Name,
+		Description: input.Description,
+		PhoneNumber: input.PhoneNumber,
+		Address:     input.Address,
+	}
+
+	err := m.services.Restaurant.Create(ctx, &restaurant)
+	if err != nil {
+		return nil, err
+	}
+
+	return models.NewRestaurant(&restaurant)[0], nil
 }

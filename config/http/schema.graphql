@@ -1,4 +1,4 @@
-scalar Time
+scalar Hour
 
 type User {
 	id: Int!
@@ -12,8 +12,8 @@ type Restaurant {
 	id: Int!
 	category: [Category!]
 	dishes: [Dish!]
-	openHour: Time!
-	closeHour: Time!
+	openHour: Hour!
+	closeHour: Hour!
 	openDays: [Weekdays!]!
 	city: City!
 	name: String!
@@ -58,13 +58,13 @@ input createDishInput {
 
 input createRestaurantInput {
 	category: Int!
-	openHour: Time!
-	closeHour: Time!
+	openHour: Hour!
+	closeHour: Hour!
 	openDays: [Weekdays!]!
 	city: Int!
 	name: String!
 	description: String
-	phoneNumber: Int!
+	phoneNumber: String!
 	address: String!
 }
 

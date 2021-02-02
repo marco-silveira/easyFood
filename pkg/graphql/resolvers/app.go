@@ -16,7 +16,7 @@ func NewResolverRoot(db *sqlx.DB) gqlgen.ResolverRoot {
 }
 
 func (a app) Mutation() gqlgen.MutationResolver {
-	return NewMutationResolver()
+	return NewMutationResolver(a.services)
 }
 
 func (a app) Query() gqlgen.QueryResolver {

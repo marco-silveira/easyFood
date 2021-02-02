@@ -14,6 +14,8 @@ type RestaurantService interface {
 	Get(ctx context.Context, id *int) ([]*entity.Restaurant, error)
 	GetByCategory(ctx context.Context, categoryID int) ([]*entity.Restaurant, error)
 	GetByDish(ctx context.Context, dishID int) (*entity.Restaurant, error)
+
+	Create(ctx context.Context, restaurant *entity.Restaurant) error
 }
 
 type restaurantService struct {
@@ -37,7 +39,7 @@ func (d restaurantService) Get(ctx context.Context, id *int) ([]*entity.Restaura
 		`, *id)
 	}
 
-	err := d.db.Select(&result, query)
+	err := d.db.SelectContext(ctx, &result, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -59,7 +61,7 @@ func (d restaurantService) GetByCategory(ctx context.Context, categoryID int) ([
 		WHERE rc.id_categoria = ?
 	`
 
-	err := d.db.Select(&result, query, categoryID)
+	err := d.db.SelectContext(ctx, &result, query, categoryID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -80,7 +82,7 @@ func (d restaurantService) GetByDish(ctx context.Context, dishID int) (*entity.R
 		WHERE p.id = ?
 	`
 
-	err := d.db.Get(result, query, dishID)
+	err := d.db.GetContext(ctx, result, query, dishID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -90,3 +92,20 @@ func (d restaurantService) GetByDish(ctx context.Context, dishID int) (*entity.R
 
 	return result, nil
 }
+
+func (d restaurantService) Create(ctx context.Context, restaurant *entity.Restaurant) error {
+	query := `
+		INSERT INTO restaurantes (horario_abertura, horario_fechamento, id_cidade, dias_funcionamento, nome, descricao, telefone, endereco)
+		VALUES (:horario_abertura, :horario_fechamento, :id_cidade, :dias_funcionamento, :nome, :descricao, :telefone, :endereco)
+	`
+
+	result, err := d.db.NamedExecContext(ctx, query, restaurant)
+	if err != nil {
+		return err
+	}
+
+	id, _ := result.LastInsertId()
+	restaurant.Id = int(id)
+	return nil
+}
+
