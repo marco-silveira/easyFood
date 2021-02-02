@@ -609,10 +609,10 @@ input createDishInput {
 
 input updateDishInput {
 	id: Int!
-	name: String!
+	name: String
 	categoryId: Int
-	price: Float!
-	cookTime: Int!
+	price: Float
+	cookTime: Int
 }
 
 input createRestaurantInput {
@@ -3715,7 +3715,7 @@ func (ec *executionContext) unmarshalInputupdateDishInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3731,7 +3731,7 @@ func (ec *executionContext) unmarshalInputupdateDishInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("price"))
-			it.Price, err = ec.unmarshalNFloat2float64(ctx, v)
+			it.Price, err = ec.unmarshalOFloat2ᚖfloat64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3739,7 +3739,7 @@ func (ec *executionContext) unmarshalInputupdateDishInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cookTime"))
-			it.CookTime, err = ec.unmarshalNInt2int(ctx, v)
+			it.CookTime, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5075,6 +5075,21 @@ func (ec *executionContext) marshalODish2ᚕᚖeasyfoodᚋpkgᚋgraphqlᚋmodels
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalFloat(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel ast.SelectionSet, v *float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalFloat(*v)
 }
 
 func (ec *executionContext) unmarshalOHour2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

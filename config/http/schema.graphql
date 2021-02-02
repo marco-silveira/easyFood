@@ -63,10 +63,10 @@ input createDishInput {
 
 input updateDishInput {
 	id: Int!
-	name: String!
+	name: String
 	categoryId: Int
-	price: Float!
-	cookTime: Int!
+	price: Float
+	cookTime: Int
 }
 
 input createRestaurantInput {

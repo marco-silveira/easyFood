@@ -87,11 +87,11 @@ type UpdateCategoryInput struct {
 }
 
 type UpdateDishInput struct {
-	ID         int     `json:"id"`
-	Name       string  `json:"name"`
-	CategoryID *int    `json:"categoryId"`
-	Price      float64 `json:"price"`
-	CookTime   int     `json:"cookTime"`
+	ID         int      `json:"id"`
+	Name       *string  `json:"name"`
+	CategoryID *int     `json:"categoryId"`
+	Price      *float64 `json:"price"`
+	CookTime   *int     `json:"cookTime"`
 }
 
 type UpdateRestaurantInput struct {

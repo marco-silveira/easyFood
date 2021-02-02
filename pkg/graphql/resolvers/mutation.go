@@ -67,8 +67,7 @@ func (m mutationResolver) UpdateRestaurant(ctx context.Context, input models.Upd
 		}
 	}
 
-	result := models.NewRestaurant(r)[0]
-	return result, nil
+	return models.NewRestaurant(r)[0], nil
 }
 
 func NewMutationResolver(s services.All) gqlgen.MutationResolver {
@@ -180,6 +179,7 @@ func (m mutationResolver) UpdateCategory(ctx context.Context, input models.Updat
 		Id: input.ID,
 		Name: input.Name,
 	}
+
 	err := m.services.Category.Update(ctx, &category)
 	if err != nil {
 		return false, err
@@ -188,22 +188,43 @@ func (m mutationResolver) UpdateCategory(ctx context.Context, input models.Updat
 }
 
 func (m mutationResolver) UpdateDish(ctx context.Context, input models.UpdateDishInput) (*models.Dish, error) {
-	if input.Name == "" {
-		return nil, errors.New("invalid dish name")
-	}
-
-	dish := entity.Dish{
-		Id:         input.ID,
-		CategoryID: input.CategoryID,
-		Name:       input.Name,
-		Price:      input.Price,
-		CookTime:   input.CookTime,
-	}
-
-	err := m.services.Dish.Update(ctx, &dish)
+	dish, err := m.services.Dish.Get(ctx, &input.ID)
 	if err != nil {
 		return nil, err
 	}
+	d := dish[0]
 
-	return models.NewDish(&dish)[0], nil
+	changes := false
+	if input.Name != nil {
+		if d.Name != *input.Name {
+			d.Name = *input.Name
+			changes = true
+		}
+	}
+	if input.CategoryID != nil {
+		if d.CategoryID != input.CategoryID {
+			d.CategoryID = input.CategoryID
+			changes = true
+		}
+	}
+	if input.CookTime != nil {
+		if d.CookTime != *input.CookTime {
+			d.CookTime = *input.CookTime
+			changes = true
+		}
+	}
+	if input.Price != nil {
+		if d.Price != *input.Price {
+			d.Price = *input.Price
+			changes = true
+		}
+	}
+
+	if changes {
+		if err := m.services.Dish.Update(ctx, d); err != nil {
+			return nil, errors.New("failed to update")
+		}
+	}
+
+	return models.NewDish(d)[0], nil
 }
