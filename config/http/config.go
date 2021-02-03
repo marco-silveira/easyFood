@@ -2,4 +2,7 @@
 
 package http
 
-const GraphqlAddr = "127.0.0.1:3000"
+const (
+	GraphqlAddr = "127.0.0.1:3000"
+	JwtSecret = "GH-ofiohgj98HNG-gw9ghwg"
+)

@@ -11,6 +11,7 @@ import (
 
 	"easyfood/pkg/graphql/gqlgen"
 	graphql "easyfood/pkg/graphql/resolvers"
+	"easyfood/pkg/middleware"
 )
 
 func NewHandler(db *sqlx.DB) http.Handler {
@@ -26,6 +27,7 @@ func NewHandler(db *sqlx.DB) http.Handler {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	r.Use(middleware.CheckJwt(db))
 	svc := handler.NewDefaultServer(gqlgen.NewExecutableSchema(gqlgenConfig))
 
 	r.Handle("/", svc)

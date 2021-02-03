@@ -3,11 +3,15 @@ package graphql
 import (
 	"context"
 	"errors"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 
 	"easyfood/pkg/entity"
 	"easyfood/pkg/graphql/gqlgen"
 	"easyfood/pkg/graphql/models"
 	"easyfood/services"
+	config "easyfood/config/http"
 )
 
 type mutationResolver struct {
@@ -73,6 +77,30 @@ func (m mutationResolver) UpdateRestaurant(ctx context.Context, input models.Upd
 
 func NewMutationResolver(s services.All) gqlgen.MutationResolver {
 	return mutationResolver{services: s}
+}
+
+func (m mutationResolver) Auth(ctx context.Context, input models.AuthInput) (*string, error) {
+	user, err := m.services.User.GetByEmail(ctx, input.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.IsEmpty() || user.Password != input.Password {
+		return nil, errors.New("unauthorized")
+	}
+
+	atClaims := jwt.MapClaims{}
+	atClaims["authorized"] = true
+	atClaims["user_id"] = user.Id
+	atClaims["user_email"] = user.Email
+	atClaims["exp"] = time.Now().Add(time.Hour * 24 * 7)
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	token, err := at.SignedString([]byte(config.JwtSecret))
+	if err != nil {
+		return nil, err
+	}
+
+	return &token, nil
 }
 
 func (m mutationResolver) CreateDish(ctx context.Context, input models.CreateDishInput) (*models.Dish, error) {

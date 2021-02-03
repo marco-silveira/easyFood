@@ -53,6 +53,11 @@ type User struct {
 	Email       string `json:"email"`
 }
 
+type AuthInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type CreateDishInput struct {
 	Name         string  `json:"name"`
 	RestaurantID int     `json:"restaurantId"`

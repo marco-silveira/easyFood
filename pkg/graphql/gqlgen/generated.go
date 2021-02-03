@@ -70,6 +70,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		Auth             func(childComplexity int, input models.AuthInput) int
 		CreateCategory   func(childComplexity int, name string) int
 		CreateDish       func(childComplexity int, input models.CreateDishInput) int
 		CreateUser       func(childComplexity int, input models.CreateUserInput) int
@@ -123,6 +124,7 @@ type MutationResolver interface {
 	UpdateRestaurant(ctx context.Context, input models.UpdateRestaurantInput) (*models.Restaurant, error)
 	UpdateDish(ctx context.Context, input models.UpdateDishInput) (*models.Dish, error)
 	UpdateCategory(ctx context.Context, input models.UpdateCategoryInput) (bool, error)
+	Auth(ctx context.Context, input models.AuthInput) (*string, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context, id int) (*models.User, error)
@@ -247,6 +249,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Dish.Restaurant(childComplexity), true
+
+	case "Mutation.auth":
+		if e.complexity.Mutation.Auth == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_auth_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Auth(childComplexity, args["input"].(models.AuthInput)), true
 
 	case "Mutation.createCategory":
 		if e.complexity.Mutation.CreateCategory == nil {
@@ -643,6 +657,11 @@ input updateCategoryInput {
     name: String!
 }
 
+input authInput {
+	email: String!
+	password: String!
+}
+
 type Query {
 	user(id: Int!): User!
 	restaurant(id: Int): [Restaurant!]
@@ -657,8 +676,8 @@ type Mutation {
 	updateRestaurant(input: updateRestaurantInput!): Restaurant!
 	updateDish(input: updateDishInput!): Dish!
 	updateCategory(input: updateCategoryInput!): Boolean!
+	auth(input: authInput!): String
 }
-
 
 enum Weekdays {
 	MONDAY
@@ -676,6 +695,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_auth_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.AuthInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNauthInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐAuthInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1611,6 +1645,45 @@ func (ec *executionContext) _Mutation_updateCategory(ctx context.Context, field 
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_auth(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_auth_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Auth(rctx, args["input"].(models.AuthInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3481,6 +3554,34 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputauthInput(ctx context.Context, obj interface{}) (models.AuthInput, error) {
+	var it models.AuthInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputcreateDishInput(ctx context.Context, obj interface{}) (models.CreateDishInput, error) {
 	var it models.CreateDishInput
 	var asMap = obj.(map[string]interface{})
@@ -4041,6 +4142,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "auth":
+			out.Values[i] = ec._Mutation_auth(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4939,6 +5042,11 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNauthInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐAuthInput(ctx context.Context, v interface{}) (models.AuthInput, error) {
+	res, err := ec.unmarshalInputauthInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNcreateDishInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐCreateDishInput(ctx context.Context, v interface{}) (models.CreateDishInput, error) {

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 
@@ -10,6 +11,7 @@ import (
 
 type UserService interface {
 	Get(ctx context.Context, id int) (*entity.User, error)
+	GetByEmail(ctx context.Context, email string) (*entity.User, error)
 	Create(ctx context.Context, user *entity.User) error
 }
 
@@ -45,4 +47,21 @@ func (u userService) Create(ctx context.Context, user *entity.User) error {
 	id, _ := result.LastInsertId()
 	user.Id = int(id)
 	return nil
+}
+
+func (u userService) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user := new(entity.User)
+	query := `
+		SELECT id, primeiro_nome, ultimo_nome, telefone, email, SHA2(senha_hash, 256) as senha_hash FROM usuarios WHERE email = ?
+	`
+
+	err := u.db.GetContext(ctx, user, query, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
 }

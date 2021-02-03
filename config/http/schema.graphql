@@ -97,6 +97,11 @@ input updateCategoryInput {
     name: String!
 }
 
+input authInput {
+	email: String!
+	password: String!
+}
+
 type Query {
 	user(id: Int!): User!
 	restaurant(id: Int): [Restaurant!]
@@ -111,8 +116,8 @@ type Mutation {
 	updateRestaurant(input: updateRestaurantInput!): Restaurant!
 	updateDish(input: updateDishInput!): Dish!
 	updateCategory(input: updateCategoryInput!): Boolean!
+	auth(input: authInput!): String
 }
-
 
 enum Weekdays {
 	MONDAY
