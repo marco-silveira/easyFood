@@ -12,6 +12,9 @@ github.com/99designs/gqlgen/graphql/introspection
 github.com/99designs/gqlgen/graphql/playground
 # github.com/agnivade/levenshtein v1.0.3
 github.com/agnivade/levenshtein
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+## explicit
+github.com/dgrijalva/jwt-go
 # github.com/go-chi/chi v3.3.2+incompatible
 ## explicit
 github.com/go-chi/chi
