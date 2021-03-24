@@ -72,6 +72,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateCategory   func(childComplexity int, name string) int
 		CreateDish       func(childComplexity int, input models.CreateDishInput) int
+		CreateRestaurant func(childComplexity int, input models.CreateRestaurantInput) int
 		CreateUser       func(childComplexity int, input models.CreateUserInput) int
 		UpdateCategory   func(childComplexity int, input models.UpdateCategoryInput) int
 		UpdateDish       func(childComplexity int, input models.UpdateDishInput) int
@@ -120,6 +121,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input models.CreateUserInput) (*models.User, error)
 	CreateDish(ctx context.Context, input models.CreateDishInput) (*models.Dish, error)
 	CreateCategory(ctx context.Context, name string) (bool, error)
+	CreateRestaurant(ctx context.Context, input models.CreateRestaurantInput) (*models.Restaurant, error)
 	UpdateRestaurant(ctx context.Context, input models.UpdateRestaurantInput) (*models.Restaurant, error)
 	UpdateDish(ctx context.Context, input models.UpdateDishInput) (*models.Dish, error)
 	UpdateCategory(ctx context.Context, input models.UpdateCategoryInput) (bool, error)
@@ -271,6 +273,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateDish(childComplexity, args["input"].(models.CreateDishInput)), true
+
+	case "Mutation.createRestaurant":
+		if e.complexity.Mutation.CreateRestaurant == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createRestaurant_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateRestaurant(childComplexity, args["input"].(models.CreateRestaurantInput)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -654,6 +668,7 @@ type Mutation {
 	createUser(input: createUserInput!): User!
 	createDish(input: createDishInput!): Dish!
 	createCategory(name: String!): Boolean!
+	createRestaurant(input: createRestaurantInput!): Restaurant!
 	updateRestaurant(input: updateRestaurantInput!): Restaurant!
 	updateDish(input: updateDishInput!): Dish!
 	updateCategory(input: updateCategoryInput!): Boolean!
@@ -699,6 +714,21 @@ func (ec *executionContext) field_Mutation_createDish_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNcreateDishInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐCreateDishInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createRestaurant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateRestaurantInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNcreateRestaurantInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐCreateRestaurantInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1485,6 +1515,48 @@ func (ec *executionContext) _Mutation_createCategory(ctx context.Context, field 
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createRestaurant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createRestaurant_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateRestaurant(rctx, args["input"].(models.CreateRestaurantInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Restaurant)
+	fc.Result = res
+	return ec.marshalNRestaurant2ᚖeasyfoodᚋpkgᚋgraphqlᚋmodelsᚐRestaurant(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateRestaurant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4026,6 +4098,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createRestaurant":
+			out.Values[i] = ec._Mutation_createRestaurant(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "updateRestaurant":
 			out.Values[i] = ec._Mutation_updateRestaurant(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -4943,6 +5020,11 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 
 func (ec *executionContext) unmarshalNcreateDishInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐCreateDishInput(ctx context.Context, v interface{}) (models.CreateDishInput, error) {
 	res, err := ec.unmarshalInputcreateDishInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNcreateRestaurantInput2easyfoodᚋpkgᚋgraphqlᚋmodelsᚐCreateRestaurantInput(ctx context.Context, v interface{}) (models.CreateRestaurantInput, error) {
+	res, err := ec.unmarshalInputcreateRestaurantInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

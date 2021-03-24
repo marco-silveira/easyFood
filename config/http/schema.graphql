@@ -108,6 +108,7 @@ type Mutation {
 	createUser(input: createUserInput!): User!
 	createDish(input: createDishInput!): Dish!
 	createCategory(name: String!): Boolean!
+	createRestaurant(input: createRestaurantInput!): Restaurant!
 	updateRestaurant(input: updateRestaurantInput!): Restaurant!
 	updateDish(input: updateDishInput!): Dish!
 	updateCategory(input: updateCategoryInput!): Boolean!

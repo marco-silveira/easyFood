@@ -54,7 +54,7 @@ func (d restaurantService) GetByCategory(ctx context.Context, categoryID int) ([
 	result := make([]*entity.Restaurant, 0)
 
 	query := fmt.Sprintf(
-		"SELECT r.id, r.horario_abertura, r.horario_fechamento, r.id_cidade,"+
+		"SELECT r.id, r.horario_abertura, r.horario_fechamento, r.id_cidade, "+
 			"r.dias_funcionamento, r.nome, r.descricao, r.telefone, r.endereco "+
 			"FROM restaurantes r "+
 			"INNER JOIN `restaurante-categoria` rc ON rc.id_restaurante = r.id "+
