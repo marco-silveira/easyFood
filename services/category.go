@@ -1,3 +1,4 @@
+//go:generate go run -mod=mod github.com/golang/mock/mockgen -package=mock -source=$GOFILE -destination=../test/categoryservice.go
 package services
 
 import (
@@ -62,12 +63,12 @@ func (c categoryService) GetByDish(ctx context.Context, dishId int) (*entity.Cat
 func (c categoryService) GetByRestaurant(ctx context.Context, restaurantId int) ([]*entity.Category, error) {
 	result := make([]*entity.Category, 0)
 
-	query := `SELECT c.id, c.nome FROM categorias as c 
-				INNER JOIN restaurante-categoria as rc
-				on c.id = rc.id_categoria
-				WHERE rc.id_restaurante = ?`
+	query := fmt.Sprintf("SELECT c.id, c.nome FROM categorias as c "+
+				"INNER JOIN `restaurante-categoria` as rc " +
+				"on c.id = rc.id_categoria "+
+				"WHERE rc.id_restaurante = %d", restaurantId)
 
-	err := c.db.SelectContext(ctx, &result, query, restaurantId)
+	err := c.db.SelectContext(ctx, &result, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
