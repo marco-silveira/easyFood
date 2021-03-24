@@ -14,6 +14,10 @@ type mutationResolver struct {
 	services services.All
 }
 
+func NewMutationResolver(s services.All) gqlgen.MutationResolver {
+	return mutationResolver{services: s}
+}
+
 func (m mutationResolver) UpdateRestaurant(ctx context.Context, input models.UpdateRestaurantInput) (*models.Restaurant, error) {
 	restaurant, err := m.services.Restaurant.Get(ctx, &input.ID)
 	if err != nil {
@@ -69,10 +73,6 @@ func (m mutationResolver) UpdateRestaurant(ctx context.Context, input models.Upd
 
 	result := models.NewRestaurant(r)[0]
 	return result, nil
-}
-
-func NewMutationResolver(s services.All) gqlgen.MutationResolver {
-	return mutationResolver{services: s}
 }
 
 func (m mutationResolver) CreateDish(ctx context.Context, input models.CreateDishInput) (*models.Dish, error) {
