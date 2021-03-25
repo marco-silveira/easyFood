@@ -67,3 +67,39 @@ func TestQueryResolver_Category(t *testing.T) {
 	})
 }
 
+func TestQueryResolver_Dish(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	dishService := mock.NewMockDishService(ctrl)
+	srvc := services.All{
+		Dish:   dishService,
+	}
+	query := NewQueryResolver(srvc)
+
+	t.Run("fail", func(t *testing.T) {
+		Id := 500
+		expectedErr := errors.New("failed")
+		dishService.EXPECT().Get(gomock.Any(), &Id).Return(nil, expectedErr)
+		res, err := query.Dish(ctx, &Id)
+
+		require.Nil(t, res)
+		require.True(t, errors.Is(expectedErr, err))
+	})
+
+	t.Run("success", func(t *testing.T) {
+		Id := 500
+		dish := []*entity.Dish{
+			{
+				Id:           200,
+				Name:         "macarronada",
+				Price:        15,
+				CookTime:     25,
+			},
+		}
+		dishService.EXPECT().Get(gomock.Any(), &Id).Return(dish, nil)
+		res, err := query.Dish(ctx, &Id)
+
+		require.Nil(t, err)
+		require.Equal(t, "macarronada", res[0].Name)
+	})
+}
